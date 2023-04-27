@@ -17,6 +17,8 @@
     "@monaco-editor/react": "^4.5.0",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.6",
+    "chonky-icon-fontawesome": "^2.3.2",
+    "chunky": "^0.0.0",
     "js-yaml": "^4.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

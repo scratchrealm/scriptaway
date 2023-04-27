@@ -3,12 +3,12 @@ import YAML from 'js-yaml'
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useAccessCode } from "../AccessCodeContext"
 
-export type ExperimentInfo = {
+export type AnalysisInfo = {
     status: 'none' | 'requested' | 'queued' | 'running' | 'completed' | 'failed'
     error?: string
 }
 
-export const useExperimentTextFile = (experimentId: string, name: string) => {
+export const useAnalysisTextFile = (analysisId: string, name: string) => {
     const [internalText, setInternalText] = useState<string | undefined>(undefined)
     const [refreshCode, setRefreshCode] = useState(0)
     const {accessCode} = useAccessCode()
@@ -16,7 +16,7 @@ export const useExperimentTextFile = (experimentId: string, name: string) => {
         (async () => {
             setInternalText(undefined)
             try {
-                const a = await readTextFile(`$dir/experiments/${experimentId}/${name}`)
+                const a = await readTextFile(`$dir/analyses/${analysisId}/${name}`)
                 setInternalText(a)
             }
             catch (err) {
@@ -24,7 +24,7 @@ export const useExperimentTextFile = (experimentId: string, name: string) => {
                 setInternalText('')
             }
         })()
-    }, [experimentId, name, refreshCode])
+    }, [analysisId, name, refreshCode])
     const refresh = useCallback(() => {
         setRefreshCode(c => (c + 1))
     }, [])
@@ -35,8 +35,8 @@ export const useExperimentTextFile = (experimentId: string, name: string) => {
         }
         (async () => {
             await serviceQuery('scriptaway', {
-                type: 'set_experiment_text_file',
-                experiment_id: experimentId,
+                type: 'set_analysis_text_file',
+                analysis_id: analysisId,
                 name,
                 text,
                 access_code: accessCode
@@ -45,32 +45,32 @@ export const useExperimentTextFile = (experimentId: string, name: string) => {
             })
             setRefreshCode(c => (c + 1))
         })()
-    }, [experimentId, name, accessCode])
+    }, [analysisId, name, accessCode])
     return {text: internalText, refresh, setText}
 }
 
-const useExperimentData = (experimentId: string) => {
-    const {text: descriptionMdText, setText: setDescriptionMdText, refresh: refreshDescriptionMdText} = useExperimentTextFile(experimentId, 'description.md')
-    const {text: experimentInfoText, refresh: refreshExperimentInfo} = useExperimentTextFile(experimentId, 'experiment.yaml')
+const useAnalysisData = (analysisId: string) => {
+    const {text: descriptionMdText, setText: setDescriptionMdText, refresh: refreshDescriptionMdText} = useAnalysisTextFile(analysisId, 'description.md')
+    const {text: analysisInfoText, refresh: refreshAnalysisInfo} = useAnalysisTextFile(analysisId, 'analysis.yaml')
 
-    const experimentInfo = useMemo(() => {
-        if (!experimentInfoText) return undefined
+    const analysisInfo = useMemo(() => {
+        if (!analysisInfoText) return undefined
         try {
-            return YAML.load(experimentInfoText) as ExperimentInfo
+            return YAML.load(analysisInfoText) as AnalysisInfo
         }
         catch (err) {
             console.warn('Problem loading yaml')
             console.warn(err)
             return undefined
         }
-    }, [experimentInfoText])
+    }, [analysisInfoText])
 
     return {
         descriptionMdText,
-        experimentInfo,
+        analysisInfo,
         setDescriptionMdText,
         refreshDescriptionMdText,
-        refreshExperimentInfo
+        refreshAnalysisInfo
     }
 }
 
@@ -79,4 +79,4 @@ const readTextFile = async (path: string) => {
     return a as string
 }
 
-export default useExperimentData
+export default useAnalysisData

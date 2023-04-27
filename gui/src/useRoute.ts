@@ -4,20 +4,20 @@ import { useCallback, useMemo } from "react"
 export type Route = {
     page: 'home'
 } | {
-    page: 'experiment'
-    experimentId: string
+    page: 'analysis'
+    analysisId: string
 }
 
 const useRoute = () => {
     const {urlState, updateUrlState} = useUrlState()
     const route: Route = useMemo(() => {
         const p = urlState['path'] || ''
-        if (p.startsWith('/experiment/')) {
+        if (p.startsWith('/analysis/')) {
             const a = p.split('/')
-            const experimentId = a[2]
+            const analysisId = a[2]
             return {
-                page: 'experiment',
-                experimentId
+                page: 'analysis',
+                analysisId
             }
         }
         else {
@@ -31,8 +31,8 @@ const useRoute = () => {
         if (r.page === 'home') {
             updateUrlState({path: '/'})
         }
-        else if (r.page === 'experiment') {
-            updateUrlState({path: `/experiment/${r.experimentId}`})
+        else if (r.page === 'analysis') {
+            updateUrlState({path: `/analysis/${r.analysisId}`})
         }
     }, [updateUrlState])
 

@@ -3,8 +3,7 @@ import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { useAccessCode } from "../AccessCodeContext";
 import Hyperlink from "../components/Hyperlink";
 import { useStatusBar } from "../StatusBar/StatusBarContext";
-import AccessCodeControl from "./AccessCodeControl";
-import ExperimentsTable from "./ExperimentsTable";
+import AnalysesTable from "./AnalysesTable";
 import useSummary from "./useSummary";
 
 type Props = {
@@ -18,24 +17,24 @@ const Home: FunctionComponent<Props> = ({width, height}) => {
 
     const {setStatusBarMessage} = useStatusBar()
 
-    const handleCreateNewExperiment = useCallback(() => {
+    const handleCreateNewAnalysis = useCallback(() => {
         if (!accessCode) {
-            window.alert(`You must set an access code before creating a new experiment.`)
+            window.alert(`You must set an access code before creating a new analysis.`)
             return
         }
-        // Confirm that user wants to create a new experiment
-        if (!window.confirm('Create a new experiment?')) return
+        // Confirm that user wants to create a new analysis
+        if (!window.confirm('Create a new analysis?')) return
         (async () => {
             const {result} = await serviceQuery('scriptaway', {
-                type: 'create_experiment',
+                type: 'create_analysis',
                 access_code: accessCode
             }, {
                 includeUserId: true
             })
-            if (!result.newExperimentId) throw new Error('Unexpected - no new experiment id')
+            if (!result.newAnalysisId) throw new Error('Unexpected - no new analysis id')
             refreshSummary()
             setTimeout(() => {
-                setStatusBarMessage(`New experiment has been created.`)
+                setStatusBarMessage(`New analysis has been created.`)
             }, 500)
         })()
     }, [refreshSummary, setStatusBarMessage, accessCode])
@@ -56,7 +55,7 @@ const Home: FunctionComponent<Props> = ({width, height}) => {
         <div style={{position: 'absolute', left: padding, top: padding, width: width - padding * 2, height: height - padding * 2, overflowY: 'auto'}}>
             <h1>Scriptaway</h1>
             <div>
-                <Hyperlink onClick={handleCreateNewExperiment}>Create new experiment</Hyperlink>
+                <Hyperlink onClick={handleCreateNewAnalysis}>Create new analysis</Hyperlink>
                 &nbsp;|&nbsp;
                 <Hyperlink onClick={refreshSummary}>Refresh table</Hyperlink>
                 &nbsp;|&nbsp;
@@ -64,7 +63,7 @@ const Home: FunctionComponent<Props> = ({width, height}) => {
             </div>
             {
                 summary ? (
-                    <ExperimentsTable summary={summary} />
+                    <AnalysesTable summary={summary} />
                 ) : (
                     !takingLongerThanExpected ? (
                         <div>Loading...</div>
@@ -73,7 +72,6 @@ const Home: FunctionComponent<Props> = ({width, height}) => {
                     )
                 )
             }
-            <AccessCodeControl />
         </div>
     )
 }

@@ -16,17 +16,15 @@ const AccessCodeControl: FunctionComponent<Props> = () => {
         setAccessCode(newAccessCode)
     }, [setAccessCode])
     return (
-        <div>
-            <Hyperlink onClick={handleSetAccessCode} color={accessCode ? 'darkgreen' : 'darkred'}>
-                {
-                    accessCode ? (
-                        <p title={accessCodeTooltip}>Access code has been set</p>
-                    ) : (
-                        <p>Set access code</p>
-                    )
-                }
-            </Hyperlink>
-        </div>
+        <Hyperlink onClick={handleSetAccessCode} color={accessCode ? 'darkgreen' : 'darkred'}>
+            {
+                accessCode ? (
+                    <span title={accessCodeTooltip}>access code has been set</span>
+                ) : (
+                    <span>set access code</span>
+                )
+            }
+        </Hyperlink>
     )
 }
 

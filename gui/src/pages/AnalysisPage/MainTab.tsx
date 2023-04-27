@@ -5,7 +5,7 @@ import TextEditor from "../TextEditor";
 type Props = {
     width: number
     height: number
-    experimentId: string
+    analysisId: string
     descriptionMdText: string | undefined
     setDescriptionMdText: (text: string) => void
     refreshDescriptionMdText: () => void

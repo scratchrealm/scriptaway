@@ -6,9 +6,9 @@ import time
 
 
 def generate_access_code(*, dir: str) -> str:
-    # check whether the experiments subdirectory exists
+    # check whether the analyses subdirectory exists
     # if not, then we are probably not in the right directory
-    if not os.path.exists(f'{dir}/experiments'):
+    if not os.path.exists(f'{dir}/analyses'):
         # check whether there are any files or folders at all, because maybe we have an empty directory and that is okay
         if len(os.listdir(dir)) == 0:
             pass # okay

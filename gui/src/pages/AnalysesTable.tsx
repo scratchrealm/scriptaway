@@ -8,41 +8,41 @@ type Props = {
     summary: Summary
 }
 
-const ExperimentsTable: FunctionComponent<Props> = ({summary}) => {
+const AnalysesTable: FunctionComponent<Props> = ({summary}) => {
     const {setRoute} = useRoute()
 
-    const experiments = [...(summary.experiments || [])]
-    // reverse the order of the experiments so that the most recent ones are at the top
-    experiments.reverse()
+    const analyses = [...(summary.analyses || [])]
+    // reverse the order of the analyses so that the most recent ones are at the top
+    analyses.reverse()
 
     return (
         <div>
             <table className="scientific-table">
                 <thead>
                     <tr>
-                        <th>Experiment</th>
+                        <th>Analysis</th>
                         <th>Title</th>
                         <th>User</th>
                         <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {experiments.map(experiment => (
-                        <tr key={experiment.experiment_id}>
+                    {analyses.map(analysis => (
+                        <tr key={analysis.analysis_id}>
                             <td>
-                                <Hyperlink onClick={() => setRoute({page: 'experiment', experimentId: experiment.experiment_id})}>
-                                    {experiment.experiment_id}
+                                <Hyperlink onClick={() => setRoute({page: 'analysis', analysisId: analysis.analysis_id})}>
+                                    {analysis.analysis_id}
                                 </Hyperlink>
                             </td>
                             <td>
-                                <Hyperlink onClick={() => setRoute({page: 'experiment', experimentId: experiment.experiment_id})}>
-                                    {experiment.title}
+                                <Hyperlink onClick={() => setRoute({page: 'analysis', analysisId: analysis.analysis_id})}>
+                                    {analysis.title}
                                 </Hyperlink>
                             </td>
                             <td>
-                                {experiment.user_id || ''}
+                                {analysis.user_id || ''}
                             </td>
-                            <td><span style={{fontSize: 11}}>{abbreviateString(removeFirstHeaderLineInMarkdown(experiment.description), 200)}</span></td>
+                            <td><span style={{fontSize: 11}}>{abbreviateString(removeFirstHeaderLineInMarkdown(analysis.description), 200)}</span></td>
                         </tr>
                     ))}
                 </tbody>
@@ -67,4 +67,4 @@ function abbreviateString(s: string, maxLength: number) {
     else return s.slice(0, maxLength) + '...'
 }
 
-export default ExperimentsTable
+export default AnalysesTable

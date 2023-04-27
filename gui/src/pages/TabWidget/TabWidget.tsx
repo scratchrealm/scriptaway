@@ -6,14 +6,15 @@ type Props = {
         label: string
         closeable: boolean
     }[]
+    currentTabIndex?: number
+    setCurrentTabIndex: (index: number) => void
     width: number
     height: number
 }
 
 const tabBarHeight = 30
 
-const TabWidget: FunctionComponent<PropsWithChildren<Props>> = ({children, tabs, width, height}) => {
-    const [currentTabIndex, setCurrentTabIndex] = useState<number | undefined>(undefined)
+const TabWidget: FunctionComponent<PropsWithChildren<Props>> = ({children, tabs, currentTabIndex, setCurrentTabIndex, width, height}) => {
     const children2 = Array.isArray(children) ? (children as React.ReactElement[]) : ([children] as React.ReactElement[])
     if ((children2 || []).length !== tabs.length) {
         throw Error(`TabWidget: incorrect number of tabs ${(children2 || []).length} <> ${tabs.length}`)

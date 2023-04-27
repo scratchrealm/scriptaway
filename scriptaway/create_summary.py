@@ -4,19 +4,19 @@ import yaml
 
 
 def create_summary(dir: str):
-    if not os.path.exists(f'{dir}/experiments'):
-        os.makedirs(f'{dir}/experiments')
+    if not os.path.exists(f'{dir}/analyses'):
+        os.makedirs(f'{dir}/analyses')
 
-    experiments = []
-    # Iterate through all the folders in the experiments directory
-    folders = os.listdir(f'{dir}/experiments')
+    analyses = []
+    # Iterate through all the folders in the analyses directory
+    folders = os.listdir(f'{dir}/analyses')
     folders.sort()
     for folder in folders:
-        path = f'{dir}/experiments/{folder}'
+        path = f'{dir}/analyses/{folder}'
 
-        # read info from experiment.yaml file
-        if os.path.exists(f'{path}/experiment.yaml'):
-            with open(f'{path}/experiment.yaml') as f:
+        # read info from analysis.yaml file
+        if os.path.exists(f'{path}/analysis.yaml'):
+            with open(f'{path}/analysis.yaml') as f:
                 info = yaml.load(f, Loader=yaml.FullLoader)
         else:
             info = {}
@@ -33,8 +33,8 @@ def create_summary(dir: str):
             description = ''
         
         title = _get_title_from_markdown(description)
-        experiments.append({
-            'experiment_id': folder,
+        analyses.append({
+            'analysis_id': folder,
             'title': title,
             'user_id': info.get('user_id', None),
             'info': info,
@@ -42,11 +42,11 @@ def create_summary(dir: str):
         })
 
     summary = {
-        'experiments': experiments
+        'analyses': analyses
     }
     
-    # write experiments to summary.json file
-    with open(f'{dir}/summary.json', 'w') as f:
+    # write analyses to summary.json file
+    with open(f'{dir}/scriptaway_summary.json', 'w') as f:
         json.dump(summary, f, indent=2)
 
 def _get_title_from_markdown(markdown: str):

@@ -31,14 +31,14 @@ class ScriptawayService:
         
         if type0 == 'test':
             return {'success': True}, b''
-        elif type0 == 'set_experiment_text_file':
+        elif type0 == 'set_analysis_text_file':
             try:
-                experiment_id = query['experiment_id']
-                check_valid_experiment_id(experiment_id)
+                analysis_id = query['analysis_id']
+                check_valid_analysis_id(analysis_id)
                 name = query['name']
                 text = query['text']
                 if _valid_text_file_name(name):
-                    path = f'$dir/experiments/{experiment_id}/{name}'
+                    path = f'$dir/analyses/{analysis_id}/{name}'
                     full_path = _get_full_path(path, dir=dir)
                     with open(full_path, 'w') as f:
                         f.write(text)
@@ -48,62 +48,62 @@ class ScriptawayService:
                     raise Exception(f'Unexpected file name: {name}')
             except Exception as err:
                 return {'success': False, 'error': str(err)}, b''
-        elif type0 == 'clone_experiment':
-            experiment_id = query['experiment_id']
-            check_valid_experiment_id(experiment_id)
-            new_experiment_id = _get_new_experiment_id(dir=_get_full_path('$dir', dir=dir))
-            path = _get_full_path(f'$dir/experiments/{experiment_id}', dir=dir)
-            path_new = _get_full_path(f'$dir/experiments/{new_experiment_id}', dir=dir)
+        elif type0 == 'clone_analysis':
+            analysis_id = query['analysis_id']
+            check_valid_analysis_id(analysis_id)
+            new_analysis_id = _get_new_analysis_id(dir=_get_full_path('$dir', dir=dir))
+            path = _get_full_path(f'$dir/analyses/{analysis_id}', dir=dir)
+            path_new = _get_full_path(f'$dir/analyses/{new_analysis_id}', dir=dir)
             shutil.copytree(path, path_new)
-            if os.path.exists(f'{path_new}/experiment.yaml'):
-                os.remove(f'{path_new}/experiment.yaml')
+            if os.path.exists(f'{path_new}/analysis.yaml'):
+                os.remove(f'{path_new}/analysis.yaml')
             x = {
                 'user_id': user_id
             }
-            with open(f'{path_new}/experiment.yaml', 'w') as f:
+            with open(f'{path_new}/analysis.yaml', 'w') as f:
                 yaml.dump(x, f)
             create_summary(dir=_get_full_path('$dir', dir=dir))
-            return {'newexperimentId': new_experiment_id}, b''
-        elif type0 == 'delete_experiment':
-            experiment_id = query['experiment_id']
-            check_valid_experiment_id(experiment_id)
-            info = _get_experiment_info(experiment_id, dir=dir)
+            return {'newanalysisId': new_analysis_id}, b''
+        elif type0 == 'delete_analysis':
+            analysis_id = query['analysis_id']
+            check_valid_analysis_id(analysis_id)
+            info = _get_analysis_info(analysis_id, dir=dir)
             info['deleted'] = True
-            _set_experiment_info(experiment_id, info, dir=dir)
+            _set_analysis_info(analysis_id, info, dir=dir)
             create_summary(dir=_get_full_path('$dir', dir=dir))
             return {'success': True}, b''
-        elif type0 == 'create_experiment':
-            new_experiment_id = _get_new_experiment_id(dir=_get_full_path('$dir', dir=dir))
-            path = _get_full_path(f'$dir/experiments/{new_experiment_id}', dir=dir)
+        elif type0 == 'create_analysis':
+            new_analysis_id = _get_new_analysis_id(dir=_get_full_path('$dir', dir=dir))
+            path = _get_full_path(f'$dir/analyses/{new_analysis_id}', dir=dir)
             os.makedirs(path)
             with open(f'{path}/description.md', 'w') as f:
                 f.write('# Untitled')
             x = {
                 'user_id': user_id
             }
-            with open(f'{path}/experiment.yaml', 'w') as f:
+            with open(f'{path}/analysis.yaml', 'w') as f:
                 yaml.dump(x, f)
             create_summary(dir=_get_full_path('$dir', dir=dir))
-            return {'newExperimentId': new_experiment_id}, b''
+            return {'newAnalysisId': new_analysis_id}, b''
         else:
             raise Exception(f'Unexpected query type: {type0}')
 
-def _get_new_experiment_id(*, dir: str) -> str:
+def _get_new_analysis_id(*, dir: str) -> str:
     i = 1
     while True:
-        # candidate experiment id is 0001, 0002, etc.
-        experiment_id = f'{i:04d}'
-        path = f'{dir}/experiments/{experiment_id}'
+        # candidate analysis id is 0001, 0002, etc.
+        analysis_id = f'{i:04d}'
+        path = f'{dir}/analyses/{analysis_id}'
         if not os.path.exists(path):
-            return experiment_id
+            return analysis_id
         i += 1
         if i > 9999:
-            raise Exception('Unable to find a new experiment id')
+            raise Exception('Unable to find a new analysis id')
 
-def _get_experiment_info(experiment_id: str, *, dir: str) -> dict:
-    # for security, ensure that experiment_id is a valid id
-    check_valid_experiment_id(experiment_id)
-    path = f'$dir/experiments/{experiment_id}/experiment.yaml'
+def _get_analysis_info(analysis_id: str, *, dir: str) -> dict:
+    # for security, ensure that analysis_id is a valid id
+    check_valid_analysis_id(analysis_id)
+    path = f'$dir/analyses/{analysis_id}/analysis.yaml'
     full_path = _get_full_path(path, dir=dir)
     if not os.path.exists(full_path):
         return {}
@@ -113,10 +113,10 @@ def _get_experiment_info(experiment_id: str, *, dir: str) -> dict:
     info = yaml.safe_load(text)
     return info
 
-def _set_experiment_info(experiment_id: str, info: dict, *, dir: str) -> None:
-    # for security, ensure that experiment_id is a valid id
-    check_valid_experiment_id(experiment_id)
-    path = f'$dir/experiments/{experiment_id}/experiment.yaml'
+def _set_analysis_info(analysis_id: str, info: dict, *, dir: str) -> None:
+    # for security, ensure that analysis_id is a valid id
+    check_valid_analysis_id(analysis_id)
+    path = f'$dir/analyses/{analysis_id}/analysis.yaml'
     full_path = _get_full_path(path, dir=dir)
     text = yaml.safe_dump(info)
     with open(full_path, 'w') as f:
@@ -138,8 +138,8 @@ def _get_full_path(path: str, *, dir: str) -> str:
     fullpath = f'{os.environ["RTCSHARE_DIR"]}/{relpath}'
     return fullpath
 
-def check_valid_experiment_id(experiment_id: str) -> None:
-    return all(c.isalnum() or c == "_" for c in experiment_id)
+def check_valid_analysis_id(analysis_id: str) -> None:
+    return all(c.isalnum() or c == "_" for c in analysis_id)
 
 def _valid_text_file_name(name: str) -> bool:
     valid_extensions = ['md', 'txt', 'json', 'yaml', 'yml', 'py']

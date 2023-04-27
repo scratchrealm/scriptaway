@@ -2,8 +2,8 @@ import { getFileData } from "@figurl/interface"
 import { useCallback, useEffect, useState } from "react"
 
 export type Summary = {
-    experiments: {
-        experiment_id: string
+    analyses: {
+        analysis_id: string
         title: string
         user_id?: string
         info: {
@@ -19,7 +19,7 @@ const useSummary = () => {
     useEffect(() => {
         setSummary(undefined)
         ;(async () => {
-            const s = await getFileData(`$dir/summary.json`, () => {}, {responseType: 'json'})
+            const s = await getFileData(`$dir/scriptaway_summary.json`, () => {}, {responseType: 'json'})
             setSummary(s)
         })()
     }, [refreshCode])

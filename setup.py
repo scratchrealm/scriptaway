@@ -13,7 +13,7 @@ setup(
     author="Jeremy Magland",
     author_email="jmagland@flatironinstitute.org",
     url="https://github.com/scratchrealm/scriptaway",
-    description="A web-based tool for creating experiments and running Python scripts",
+    description="A web-based tool for creating analyses and running Python scripts",
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(),
