@@ -1,7 +1,8 @@
-import { FunctionComponent } from "react"
-import { useAccessCode } from "../../AccessCodeContext"
-import TextEditor from "../TextEditor"
-import { useAnalysisTextFile } from "../useAnalysisData"
+import { FunctionComponent, useMemo } from "react";
+import { useAccessCode } from "../../AccessCodeContext";
+import TextEditor from "../TextEditor";
+import { useAnalysisTextFile } from "../useAnalysisData";
+import NotebookRenderer from "./NotebookRenderer";
 
 type Props = {
     relativePath: string
@@ -13,6 +14,24 @@ type Props = {
 const OpenedFileWindow: FunctionComponent<Props> = ({relativePath, analysisId, width, height}) => {
     const {accessCode} = useAccessCode()
     const {text, setText, refresh} = useAnalysisTextFile(analysisId, relativePath)
+
+    const jupyterContent = useMemo(() => {
+        if (!relativePath.endsWith('.ipynb')) {
+            return {}
+        }
+        else {
+            return JSON.parse(text || '{}')
+        }
+    }, [text, relativePath])
+
+    if (relativePath.endsWith('.ipynb')) {
+        return (
+            <div className="OpenedFileWindow" style={{position: 'absolute', width, height, overflowY: 'auto', backgroundColor: 'white'}}>
+                <NotebookRenderer notebook={jupyterContent}/>
+            </div>
+        )
+    }
+
     return (
         <div className="OpenedFileWindow" style={{position: 'absolute', width, height}}>
             <TextEditor
