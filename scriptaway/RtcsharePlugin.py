@@ -3,7 +3,7 @@ import os
 import yaml
 import shutil
 import time
-from .create_summary import create_summary
+from .create_summary import create_summary, create_summary_if_sufficient_time_passed
 from .generate_access_code import check_valid_access_code
 
 
@@ -19,6 +19,8 @@ class ScriptawayService:
         access_code_required = True
         if type0 == 'test':
             access_code_required = False
+        if type0 == 'probe':
+            access_code_required = False
 
         access_code_verified = False        
         if access_code_required:
@@ -30,6 +32,15 @@ class ScriptawayService:
             access_code_verified = True
         
         if type0 == 'test':
+            return {'success': True}, b''
+        elif type0 == 'probe':
+            # probe is important because we will use the probe
+            # as an opportunity to update the summary if it has
+            # been a while. The GUI will make a probe call on
+            # initialization prior to requested the summary file.
+
+            create_summary_if_sufficient_time_passed(dir=_get_full_path('$dir', dir=dir))
+
             return {'success': True}, b''
         elif type0 == 'set_analysis_text_file':
             try:

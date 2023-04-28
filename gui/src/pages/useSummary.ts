@@ -1,4 +1,4 @@
-import { getFileData } from "@figurl/interface"
+import { getFileData, serviceQuery } from "@figurl/interface"
 import { useCallback, useEffect, useState } from "react"
 
 export type Summary = {
@@ -19,6 +19,17 @@ const useSummary = () => {
     useEffect(() => {
         setSummary(undefined)
         ;(async () => {
+
+            // The purpose of probing the scriptaway initially is to have it update
+            // the summary file if needed.
+            try {
+                await serviceQuery('scriptaway', {type: 'probe'})
+            }
+            catch (err) {
+                console.error(err)
+                console.warn('Problem probing scriptaway service.')
+            }
+
             const s = await getFileData(`$dir/scriptaway_summary.json`, () => {}, {responseType: 'json'})
             setSummary(s)
         })()

@@ -1,6 +1,7 @@
 import os
 import json
 import yaml
+import time
 
 
 def create_summary(dir: str):
@@ -48,6 +49,19 @@ def create_summary(dir: str):
     # write analyses to summary.json file
     with open(f'{dir}/scriptaway_summary.json', 'w') as f:
         json.dump(summary, f, indent=2)
+
+def create_summary_if_sufficient_time_passed(dir: str):
+    summary_fname = f'{dir}/scriptaway_summary.json'
+    refresh_needed = False
+    if not os.path.exists(summary_fname):
+        refresh_needed = True
+    else:
+        # check if sufficient time has passed
+        modification_time = os.path.getmtime(summary_fname)
+        if time.time() - modification_time > 60:
+            refresh_needed = True
+    if refresh_needed:
+        create_summary(dir=dir)
 
 def _get_title_from_markdown(markdown: str):
     # Extract the title from the markdown
